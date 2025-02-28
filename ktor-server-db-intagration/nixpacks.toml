@@ -1,0 +1,9 @@
+[phases.setup]
+nixpkgs = ["jdk17", "gradle"]
+
+[phases.build]
+cmds = ["gradle build"]
+
+
+[start]
+cmd = "java -jar build/libs/ktor-server-db-intagration-all.jar"
