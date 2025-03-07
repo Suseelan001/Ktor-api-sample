@@ -1,4 +1,4 @@
-package com.example
+package com.example.loginapi
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.Serializable
@@ -8,13 +8,13 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.jetbrains.exposed.sql.transactions.transaction
 
 @Serializable
-data class ExposedUser(val name: String, val age: Int)
+data class UserLoginModel(val gmail: String, val password: Int)
 
-class UserService(database: Database) {
+class UserLoginSchema(database: Database) {
     object Users : Table() {
         val id = integer("id").autoIncrement()
-        val name = varchar("name", length = 50)
-        val age = integer("age")
+        val gmail = varchar("gmail", length = 50)
+        val password = integer("password")
 
         override val primaryKey = PrimaryKey(id)
     }
@@ -25,28 +25,19 @@ class UserService(database: Database) {
         }
     }
 
-    suspend fun create(user: ExposedUser): Int = dbQuery {
+    suspend fun create(user: UserLoginModel): Int = dbQuery {
         Users.insert {
-            it[name] = user.name
-            it[age] = user.age
+            it[gmail] = user.gmail
+            it[password] = user.password
         }[Users.id]
     }
 
-    suspend fun read(id: Int): ExposedUser? {
+    suspend fun read(id: Int): UserLoginModel? {
         return dbQuery {
             Users.selectAll()
                 .where { Users.id eq id }
-                .map { ExposedUser(it[Users.name], it[Users.age]) }
+                .map { UserLoginModel(it[Users.gmail], it[Users.password]) }
                 .singleOrNull()
-        }
-    }
-
-    suspend fun update(id: Int, user: ExposedUser) {
-        dbQuery {
-            Users.update({ Users.id eq id }) {
-                it[name] = user.name
-                it[age] = user.age
-            }
         }
     }
 
@@ -56,11 +47,11 @@ class UserService(database: Database) {
         }
     }
 
-
-
-
-
     private suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
+
+
 }
+
+
 
