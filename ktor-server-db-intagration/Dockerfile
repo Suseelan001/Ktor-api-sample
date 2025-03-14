@@ -1,14 +1,13 @@
-# Use OpenJDK as the base image
-FROM openjdk:17-jdk-slim
+FROM openjdk:23-jdk-slim
 
-# Set the working directory inside the container
 WORKDIR /app
 
-ARG JAR_FILE=build/libs/ktor-server-db-intagration-all.jar
-COPY ${JAR_FILE} /app/
+# Copy application.yaml & app jar
+COPY src/main/resources/application.yaml /app/resources/application.yaml
+COPY build/libs/ktor-server-db-intagration-all.jar /app/
 
-# Expose the port your Ktor application runs on
+# Expose port
 EXPOSE 8080
 
-# Run the application
-CMD ["java", "-jar", "ktor-server-db-intagration-all.jar"]
+# Run Ktor with explicit config file
+CMD ["java", "-Dconfig.file=/app/resources/application.yaml", "-jar", "/app/ktor-server-db-intagration-all.jar"]
