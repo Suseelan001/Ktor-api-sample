@@ -10,7 +10,9 @@ import io.ktor.server.routing.*
 fun Application.configureRouting() {
     routing {
         get("/") {
-            call.respondText("Hello, Ktor is running!")
+            call.respondText("Hello World!")
         }
+        // Static plugin. Try to access `/static/index.html`
+        staticResources("/static", "static")
     }
 }
